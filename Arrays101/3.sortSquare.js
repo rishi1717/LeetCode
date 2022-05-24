@@ -1,10 +1,9 @@
 var sortedSquares = function (nums) {
-
-    let square = nums.map((num) => {
-        return num * num
-    })
-    square.sort((a, b) => a-b)
-    console.log(square)
+	let square = nums.map((num) => {
+		return num * num
+	})
+	square.sort((a, b) => a - b)
+	return square
 }
 
-sortedSquares( [-3,-1,0,3,5] )
+console.log(sortedSquares([-3, -1, 0, 3, 5]))
