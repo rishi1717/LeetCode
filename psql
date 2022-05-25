@@ -48,3 +48,85 @@ VALUES('Karan','Mehta','HR',300000),
 ('Sanket','Gupta','Developer',100000),
 ('Shruthi','Varyar','Admin',80000),
 ('Rohit','Sharma','Admin',75000);
+
+
+CREATE TABLE orders(order_id BIGSERIAL NOT NULL PRIMARY KEY,
+customer_id INTEGER NOT NULL,
+order_date DATE NOT NULL,
+item_id INTEGER REFERENCES items (item_id) NOT NULL,
+quantity INTEGER NOT NULL
+);
+
+INSERT INTO orders (customer_id, order_date, item_id, quantity)
+VALUES (1,'2020-06-01',1,10),
+(1,'2020-06-08',2,10),
+(2,'2020-06-02',1,5),
+(3,'2020-06-03',3,5),
+(4,'2020-06-04',4,1),
+(4,'2020-06-05',5,5),
+(5,'2020-06-05',1,10),
+(5,'2020-06-14',4,5),
+(5,'2020-06-21',3,5);
+
+CREATE TABLE items(item_id BIGSERIAL NOT NULL PRIMARY KEY,
+item_name VARCHAR(20) NOT NULL,
+item_category VARCHAR(20) NOT NULL,
+);
+
+INSERT INTO items (item_name, item_category)
+VALUES('LC Alg.Book','Book'),
+('LC DB.Book','Book'),
+('LC SmartPhone','Phone'),
+('LC Phone 2020','Phone'),
+('LC SmartGlass','Glasses'),
+('LC Tshirt','T-Shirt');
+
+
+SELECT item_category AS category,
+SUM(CASE WHEN EXTRACT(isodow FROM order_date) = 1 THEN quantity else 0 end) AS "monday",
+SUM(CASE WHEN EXTRACT(isodow FROM order_date) = 2 THEN quantity else 0 end) AS "tuesday",
+SUM(CASE WHEN EXTRACT(isodow FROM order_date) = 3 THEN quantity else 0 end) AS "wednesday",
+SUM(CASE WHEN EXTRACT(isodow FROM order_date) = 4 THEN quantity else 0 end) AS "thursday",
+SUM(CASE WHEN EXTRACT(isodow FROM order_date) = 5 THEN quantity else 0 end) AS "friday",
+SUM(CASE WHEN EXTRACT(isodow FROM order_date) = 6 THEN quantity else 0 end) AS "saturday",
+SUM(CASE WHEN EXTRACT(isodow FROM order_date) = 7 THEN quantity else 0 end) AS "sunday"
+FROM items JOIN orders ON items.item_id = orders.item_id
+GROUP BY item_category;
+
+
+
+
+
+CREATE TABLE department (id BIGSERIAL NOT NULL PRIMARY KEY,
+department_name VARCHAR(10) NOT NULL);
+
+INSERT INTO department (department_name)
+VALUES('IT'),
+('Sales');
+
+
+CREATE TABLE employee (id BIGSERIAL NOT NULL PRIMARY KEY,
+name VARCHAR(20) NOT NULL,
+salary INTEGER NOT NULL,
+department_id INTEGER REFERENCES department (id) NOT NULL);
+
+INSERT INTO employee (name, salary, department_id)
+VALUES('Joe', 85000, 1),
+('Henry', 80000, 2),
+('Sam',60000, 2),
+('Max', 90000,1),
+('Janet', 69000, 1),
+('Randy',85000, 1),
+('Will',70000, 1);
+
+
+SELECT department.department_name as department,
+employee.name as employee,
+employee.salary as salary
+FROM department, employee
+WHERE(
+    SELECT COUNT(distinct salary)
+    FROM employee
+    WHERE salary > employee.salary AND department_id = department.id
+) < 3 AND employee.Department_id = department.id
+ORDER BY department.id, employee.salary DESC;
