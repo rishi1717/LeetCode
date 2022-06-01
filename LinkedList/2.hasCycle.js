@@ -1,0 +1,1 @@
+var hasCycle = function (head) {}
